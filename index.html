@@ -48,6 +48,11 @@
 <iframe id="app" title="Carteira QD" allow="clipboard-write; geolocation"></iframe>
 <script>
   const APP_URL = "https://script.google.com/a/macros/simcombustiveis.com.br/s/AKfycbz_Ve_xyJttkzhybaNo2eHHzZKMMZ8j0juHwH4Te5HXY5ivVlKNDJi9WSwefeBuQhyfSg/exec";   // Implantar → Gerenciar implantações → URL do app da Web (termina em /exec)
+  // iPhone/iPad (e Safari no Mac): o Safari não deixa o app do Google, dentro desta página, ver o login da conta
+  // (bloqueio de cookies de outro site), então lá a casca não embute: abre o app direto, na página inteira.
+  const SAFARI = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) ||
+    (/Safari\//.test(navigator.userAgent) && !/Chrome|Chromium|CriOS|Edg|OPR|Android/.test(navigator.userAgent));
+  if (SAFARI) location.replace(APP_URL);
   const f = document.getElementById("app"), ajuda = document.getElementById("ajuda"), msg = document.getElementById("msg");
   let ok = false, espera;
   const abriu = () => { ok = true; clearTimeout(espera); document.body.classList.add("ok"); };
@@ -65,7 +70,7 @@
   document.getElementById("mesmo").onclick = abriu;
   // voltou do login em outra aba: tenta de novo sozinho
   document.addEventListener("visibilitychange", () => { if (!ok && document.visibilityState === "visible" && ajuda.classList.contains("mostra")) carrega(); });
-  carrega();
+  if (!SAFARI) carrega();
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 </script>
 </body>
