@@ -1,0 +1,36 @@
+CASCA DO CARTEIRA QD — PARA INSTALAR COMO APP NO ANDROID
+=======================================================
+
+O que é: uma página mínima que o Chrome do Android aceita "instalar" (tela cheia, sem barra, com ícone e nome
+"Carteira QD"). Ela só mostra o app do Apps Script dentro dela. Não tem dado nenhum: login, permissões e carteira
+continuam no Google. No iPhone também funciona (Compartilhar → Adicionar à Tela de Início) e com o ícone certo.
+
+Arquivos (todos juntos, na mesma pasta):
+  index.html              a página (a linha APP_URL tem o link /exec do app)
+  manifest.webmanifest    nome, cores e ícones do app
+  sw.js                   exigência do Chrome para oferecer "Instalar app"
+  icone-192.png, icone-512.png, apple-touch-icon.png
+
+PUBLICAR NO GITHUB PAGES (grátis, uma vez só)
+---------------------------------------------
+1. Crie uma conta em github.com (pode ser com o e-mail da QD).
+2. Clique em + (canto de cima) → New repository → nome: carteira-qd → Public → Create repository.
+3. Na página do repositório: "uploading an existing file" → arraste os 6 arquivos desta pasta → Commit changes.
+   (não suba o LEIA-ME)
+4. Settings → Pages → em "Build and deployment": Source = Deploy from a branch; Branch = main, pasta / (root) → Save.
+5. Em 1 a 2 minutos aparece o endereço: https://SEU-USUARIO.github.io/carteira-qd/
+   Esse é o link que vai para os colegas.
+
+O repositório fica público, mas só tem o ícone, o nome e o link do app. Abrir o link sem conta da QD não mostra nada.
+
+INSTALAR NO CELULAR
+-------------------
+Android (Chrome): abrir o link da casca → aparece "Instalar app" (ou ⋮ → Instalar app) → Instalar.
+iPhone (Safari): abrir o link da casca → Compartilhar → Adicionar à Tela de Início.
+Antes, a pessoa precisa estar logada na conta Google da QD no navegador. Se a casca ficar em "Carregando…",
+ela mostra um link para entrar na conta; depois é só voltar ao app.
+
+TROCAR ALGO DEPOIS
+------------------
+Mudou o link do app: edite a linha APP_URL no index.html dentro do GitHub (lápis) → Commit.
+O app em si continua sendo atualizado como sempre (Apps Script → Nova versão); a casca não muda.
