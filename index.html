@@ -4,6 +4,8 @@
   Apps Script não deixa ter um. Esta página tem o manifesto e mostra o app de verdade dentro dela, em tela cheia.
   Aqui não tem dado nenhum: login, permissões e carteira continuam no Apps Script.
   Para trocar o endereço do app, mude só a linha APP_URL abaixo.
+  O app só aparece quando avisa que abriu (mensagem "carteiraQD:ok"). Sem login, o Okta/Google se recusa a abrir aqui
+  dentro e ficaria uma tela branca: por isso a espera mostra o botão de entrar na conta.
 -->
 <html lang="pt-BR">
 <head>
@@ -19,31 +21,51 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
   html, body { margin: 0; height: 100%; background: #fff; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  #app { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+  #app { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; display: block; visibility: hidden; }
+  body.ok #app { visibility: visible; } body.ok #espera { display: none; }
   #espera { position: fixed; inset: 0; display: grid; place-content: center; justify-items: center; gap: 14px; color: #4a5272; text-align: center; padding: 24px; }
   #espera img { width: 96px; height: 96px; }
   #espera b { color: #0d1430; font-size: 18px; }
   #espera p { margin: 0; font-size: 14px; max-width: 320px; }
-  #espera a { color: #0229E9; font-weight: 600; }
-  #ajuda { opacity: 0; transition: opacity .3s; } #ajuda.mostra { opacity: 1; }
+  #ajuda { display: none; gap: 12px; justify-items: center; } #ajuda.mostra { display: grid; }
+  .bt { display: inline-block; padding: 12px 22px; border-radius: 10px; background: #0229E9; color: #fff; font-weight: 600; font-size: 15px; text-decoration: none; border: 0; }
+  .bt.sec { background: #eef1fe; color: #0229E9; }
+  .lk { background: none; border: 0; color: #4a5272; font-size: 13px; text-decoration: underline; }
 </style>
 </head>
 <body>
 <div id="espera">
   <img src="icone-192.png" alt="">
   <b>Carteira QD</b>
-  <p>Carregando…</p>
-  <p id="ajuda">Não abriu? Entre primeiro na sua conta Google da empresa (@simcombustiveis.com.br) <a id="entrar" target="_blank" rel="noopener">por aqui</a> e depois volte ao app.</p>
+  <p id="msg">Carregando…</p>
+  <div id="ajuda">
+    <p>Para abrir, entre na sua conta da empresa (@simcombustiveis.com.br). Depois de entrar, volte para cá.</p>
+    <a id="entrar" class="bt" target="_blank" rel="noopener">Entrar na conta</a>
+    <button id="denovo" class="bt sec" type="button">Tentar de novo</button>
+    <button id="mesmo" class="lk" type="button">Abrir assim mesmo</button>
+  </div>
 </div>
 <iframe id="app" title="Carteira QD" allow="clipboard-write; geolocation"></iframe>
 <script>
   const APP_URL = "https://script.google.com/a/macros/simcombustiveis.com.br/s/AKfycbz_Ve_xyJttkzhybaNo2eHHzZKMMZ8j0juHwH4Te5HXY5ivVlKNDJi9WSwefeBuQhyfSg/exec";   // Implantar → Gerenciar implantações → URL do app da Web (termina em /exec)
-  const f = document.getElementById("app");
+  const f = document.getElementById("app"), ajuda = document.getElementById("ajuda"), msg = document.getElementById("msg");
+  let ok = false, espera;
+  const abriu = () => { ok = true; clearTimeout(espera); document.body.classList.add("ok"); };
+  function carrega() {
+    ajuda.classList.remove("mostra"); msg.textContent = "Carregando…";
+    f.src = APP_URL;
+    // em 10 s sem o app avisar que abriu (sem login na conta da empresa, quase sempre): mostra o caminho para entrar
+    clearTimeout(espera);
+    espera = setTimeout(() => { msg.textContent = "Não conseguiu abrir a carteira."; ajuda.classList.add("mostra"); }, 10000);
+  }
+  // o app do Apps Script roda num endereço *.googleusercontent.com
+  addEventListener("message", e => { try { if (e.data === "carteiraQD:ok" && new URL(e.origin).hostname.endsWith(".googleusercontent.com")) abriu(); } catch (x) { /* origem estranha */ } });
   document.getElementById("entrar").href = APP_URL;
-  f.src = APP_URL;
-  // se em 8 s ainda não carregou (sem login na conta QD, por exemplo), mostra o caminho para entrar
-  setTimeout(() => document.getElementById("ajuda").classList.add("mostra"), 8000);
-  f.addEventListener("load", () => { document.getElementById("espera").style.visibility = "hidden"; });
+  document.getElementById("denovo").onclick = carrega;
+  document.getElementById("mesmo").onclick = abriu;
+  // voltou do login em outra aba: tenta de novo sozinho
+  document.addEventListener("visibilitychange", () => { if (!ok && document.visibilityState === "visible" && ajuda.classList.contains("mostra")) carrega(); });
+  carrega();
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 </script>
 </body>
