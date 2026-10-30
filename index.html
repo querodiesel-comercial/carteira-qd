@@ -27,7 +27,7 @@
   #espera img { width: 96px; height: 96px; }
   #espera b { color: #0d1430; font-size: 18px; }
   #espera p { margin: 0; font-size: 14px; max-width: 320px; }
-  #ios { display: grid; gap: 12px; justify-items: center; } #ios[hidden] { display: none; } #ios b { font-size: inherit; color: inherit; }
+  #ios { display: grid; gap: 12px; justify-items: center; } #ios ol { margin: 0; padding-left: 20px; text-align: left; max-width: 320px; font-size: 14px; display: grid; gap: 6px; } #ios[hidden] { display: none; } #ios b { font-size: inherit; color: inherit; }
   #ajuda { display: none; gap: 12px; justify-items: center; } #ajuda.mostra { display: grid; }
   .bt { display: inline-block; padding: 12px 22px; border-radius: 10px; background: #0229E9; color: #fff; font-weight: 600; font-size: 15px; text-decoration: none; border: 0; }
   .bt.sec { background: #eef1fe; color: #0229E9; }
@@ -46,7 +46,12 @@
     <button id="mesmo" class="lk" type="button">Abrir assim mesmo</button>
   </div>
   <div id="ios" hidden>
-    <p>Para ter o app com o ícone na tela do iPhone: toque em <b>Compartilhar</b> (quadrado com a seta) e depois em <b>Adicionar à Tela de Início</b>.</p>
+    <p>No iPhone, o app é instalado pela página da carteira:</p>
+    <ol>
+      <li>Toque em <b>Abrir a carteira</b> (aqui embaixo).</li>
+      <li>Lá, toque em <b>Compartilhar</b> (quadrado com a seta) e em <b>Adicionar à Tela de Início</b>.</li>
+      <li>Abra sempre pelo ícone novo: tela cheia, sem a barra do Safari, e entra direto.</li>
+    </ol>
     <a id="abrirIos" class="bt">Abrir a carteira</a>
   </div>
 </div>
@@ -54,9 +59,9 @@
 <script>
   const APP_URL = "https://script.google.com/a/macros/simcombustiveis.com.br/s/AKfycbz_Ve_xyJttkzhybaNo2eHHzZKMMZ8j0juHwH4Te5HXY5ivVlKNDJi9WSwefeBuQhyfSg/exec";   // Implantar → Gerenciar implantações → URL do app da Web (termina em /exec)
   // iPhone/iPad (e Safari no Mac): o Safari não deixa o app do Google, dentro desta página, ver o login da conta
-  // (bloqueio de cookies de outro site), então lá a casca não embute: aberta pelo ícone da tela de início, vai direto
-  // para o app; aberta no Safari, fica parada mostrando como adicionar à tela de início (senão o Safari não dá tempo de
-  // pegar o ícone e o nome desta página) e um botão para abrir a carteira.
+  // (bloqueio de cookies de outro site), então lá a casca não embute. No iPhone o app é instalado direto do /exec
+  // (tela cheia como no Android, mas com o ícone que o iPhone escolher: o Google não deixa trocar). Aberta no Safari,
+  // a casca ensina esse caminho; aberta por um ícone antigo da casca, vai direto para o app.
   const SAFARI = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) ||
     (/Safari\//.test(navigator.userAgent) && !/Chrome|Chromium|CriOS|Edg|OPR|Android/.test(navigator.userAgent));
   const INSTALADO = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
